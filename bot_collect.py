@@ -1,7 +1,11 @@
 import math
+import pickle
+import time
+import os
 class MLPlay:
-    def __init__(self, ai_name,*args,**kwargs):
+    def __init__(self, ai_name, game_params,*args,**kwargs):
         self.player_no = ai_name
+        self.game_params = game_params
         
         self.round_status = None
         # paste start
@@ -57,5 +61,22 @@ class MLPlay:
         """
         Reset the status
         """
-        # print("reset ml script")
+        if self.round_status == 'GAME_PASS':
+            # Get current timestamp
+            timestamp = int(time.time())
+
+            # Define filename
+            dir_path = os.path.join('record', str(self.game_params['map']))
+            os.makedirs(dir_path, exist_ok=True)
+            filepath = os.path.join(dir_path, f'{timestamp}.pickle')
+
+            # Open file in binary write mode
+            with open(filepath, "wb") as f:
+                # Dump self.record to file using pickle
+                pickle.dump(self.record, f)
+                print(f'record save to {filepath}')
+
+        # reset
+        self.round_status = None
+        self.record = {'scene_infos': [], 'control_lists': []}
         pass
