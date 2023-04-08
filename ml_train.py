@@ -67,6 +67,9 @@ for path in dataset_path:
                 stuck_frame_count += 1
             else:
                 stuck_frame_count = 0
+            
+            last_x = x
+            last_y = y
             data_x.append([stuck_frame_count, scene_info['L_sensor'], scene_info['L_T_sensor'], scene_info['F_sensor'], scene_info['R_T_sensor'], scene_info['R_sensor']])
             data_y.append([record['control_lists'][i]['left_PWM'], record['control_lists'][i]['right_PWM']])
 
