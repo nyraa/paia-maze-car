@@ -8,8 +8,12 @@ class MLPlay:
         self.game_params = game_params
         
         self.round_status = None
-        # paste start
-        self.prev_pos = []
+
+        self.prev_x = 0
+        self.prev_y = 0
+        self.go_back = 0
+        self.go_back_count = 0
+
         self.control_list = {}
         self.record = {'scene_infos': [], 'control_lists': []}
 
@@ -19,10 +23,34 @@ class MLPlay:
         """
         if scene_info["status"] != "GAME_ALIVE":
             self.round_status = scene_info['status']
+            self.go_back = 0
+            self.go_back_count = 0
+            self.prev_x = 0
+            self.prev_y = 0
             return "RESET"
         # paste start
         r_sensor, rf_sensor, l_sensor, lf_sensor, f_sensor = scene_info["R_sensor"], scene_info['R_T_sensor'], scene_info["L_sensor"], scene_info['L_T_sensor'], scene_info["F_sensor"]
-        MAX_D = 20
+        x, y = scene_info['x'], scene_info['y']
+
+
+        if self.go_back > 0:
+            self.go_back -= 1
+            # return {'left_PWM': 0, 'right_PWM': -255}
+        
+        dx = x - self.prev_x
+        dy = y - self.prev_y
+        if (dx**2+dy**2)**0.5 < 1:
+            self.go_back_count += 1
+        else:
+            self.go_back_count = 0
+        if self.go_back_count > 25:
+            self.go_back = 20
+            self.go_back_count = 0
+
+        self.prev_x = x
+        self.prev_y = y
+
+        MAX_D = 15
         left = 0
         right = 0
         if f_sensor > MAX_D:
@@ -68,7 +96,7 @@ class MLPlay:
             # Define filename
             dir_path = os.path.join('record', str(self.game_params['map']))
             os.makedirs(dir_path, exist_ok=True)
-            filepath = os.path.join(dir_path, f'{timestamp}.pickle')
+            filepath = os.path.join(dir_path, f'{timestamp}_{self.record[-1]["frame"]}.pickle')
 
             # Open file in binary write mode
             with open(filepath, "wb") as f:
