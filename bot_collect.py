@@ -94,9 +94,9 @@ class MLPlay:
             timestamp = int(time.time())
 
             # Define filename
-            dir_path = os.path.join('record', str(self.game_params['map']))
+            dir_path = os.path.join('record', f"{self.game_params['game_type']}{self.game_params['map']}")
             os.makedirs(dir_path, exist_ok=True)
-            filepath = os.path.join(dir_path, f'{timestamp}_{self.record[-1]["frame"]}.pickle')
+            filepath = os.path.join(dir_path, f"{timestamp}_{self.record['scene_infos'][-1]['frame']}.pickle")
 
             # Open file in binary write mode
             with open(filepath, "wb") as f:
