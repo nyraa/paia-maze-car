@@ -5,9 +5,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import os
 
-FOLDER_NAME = "record"
+FOLDER_NAME = "record_"
 MODEL_FOLDER = 'model'
-MAX_TAKE = 5000
+MAX_TAKE = 300
 
 threshold = {
     'PRACTICE1': -1,
@@ -28,36 +28,40 @@ threshold = {
 }
 
 dataset_path = []
-for folder_name in os.listdir(FOLDER_NAME):
-    if not os.path.isdir(os.path.join(FOLDER_NAME, folder_name)):
+for gametype in os.listdir(FOLDER_NAME):
+    if not os.path.isdir(os.path.join(FOLDER_NAME, gametype)):
         continue  # skip files that aren't directories
+    
+    for map in os.listdir(os.path.join(FOLDER_NAME, gametype)):
+        if not os.path.isdir(os.path.join(FOLDER_NAME, gametype, map)):
+            continue
 
-    folder_threshold = threshold.get(folder_name, None)  # default to 0 if folder not in threshold dict
-    if folder_threshold == None:
-        print(f"{folder_name} limit undefined")
-    if folder_threshold != None and folder_threshold < 0:
-        folder_threshold = None
-        print(f"{folder_name} has no limit")
+        folder_threshold = threshold.get(gametype + map, None)  # default to 0 if folder not in threshold dict
+        if folder_threshold == None:
+            print(f"{gametype} limit undefined")
+        if folder_threshold != None and folder_threshold < 0:
+            folder_threshold = None
+            print(f"{gametype}{map} has no limit")
 
-    folder_dataset_path = []
+        folder_dataset_path = []
 
-    for filename in os.listdir(os.path.join(FOLDER_NAME, folder_name)):
-        if not filename.endswith(".pickle"):
-            continue  # skip non-pickle files
+        for filename in os.listdir(os.path.join(FOLDER_NAME, gametype, map)):
+            if not filename.endswith(".pickle"):
+                continue  # skip non-pickle files
 
-        file_parts = filename.split("_")
-        if len(file_parts) != 2:
-            continue  # skip files that don't match the expected format
+            file_parts = filename.split("_")
+            if len(file_parts) != 2:
+                continue  # skip files that don't match the expected format
 
-        record_framecount = int(file_parts[1].split(".")[0])
-        if folder_threshold != None and record_framecount >= folder_threshold:
-            continue  # skip files that don't meet the threshold
+            record_framecount = int(file_parts[1].split(".")[0])
+            if folder_threshold != None and record_framecount >= folder_threshold:
+                continue  # skip files that don't meet the threshold
 
-        # do something with the selected file
-        folder_dataset_path.append((record_framecount, os.path.join(FOLDER_NAME, folder_name, filename)))
-    folder_dataset_path.sort(key=lambda x: x[0])
-    print(f'map {folder_name} has {len(folder_dataset_path)} vaild record(s)')
-    dataset_path += [x[1] for x in folder_dataset_path[:MAX_TAKE]]
+            # do something with the selected file
+            folder_dataset_path.append((record_framecount, os.path.join(FOLDER_NAME, gametype, map, filename)))
+        folder_dataset_path.sort(key=lambda x: x[0])
+        print(f'map {gametype}{map} has {len(folder_dataset_path)} vaild record(s)')
+        dataset_path += [x[1] for x in folder_dataset_path[:MAX_TAKE]]
 
 
 data_x = []
@@ -103,7 +107,8 @@ y_predict = regressor.predict(X_test)
 
 # Evaluate the model's performance
 mse = mean_squared_error(y_test, y_predict)
-print(f"Mean Squared Error: {mse:.2f}")
+rmse = mse ** 0.5
+print(f"Root Mean Squared Error: {rmse:.2f}")
 os.makedirs(MODEL_FOLDER, exist_ok=True)
 with open(os.path.join(MODEL_FOLDER, 'model.pickle'), 'wb') as f:
     pickle.dump(regressor, f)

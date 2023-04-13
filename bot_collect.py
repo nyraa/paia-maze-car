@@ -58,11 +58,11 @@ class MLPlay:
             right = 255
         else:
             if lf_sensor > rf_sensor:
-                left = -160
-                right = 255
+                left = -100
+                right = 200
             elif rf_sensor > lf_sensor:
-                left = 255
-                right = -160
+                left = 200
+                right = -100
             else:
                 left = 255
                 right = 255
@@ -94,7 +94,7 @@ class MLPlay:
             timestamp = int(time.time())
 
             # Define filename
-            dir_path = os.path.join('record', f"{self.game_params['game_type']}{self.game_params['map']}")
+            dir_path = os.path.join('record', f"{self.game_params['game_type']}", self.game_params['map'])
             os.makedirs(dir_path, exist_ok=True)
             filepath = os.path.join(dir_path, f"{timestamp}_{self.record['scene_infos'][-1]['frame']}.pickle")
 
