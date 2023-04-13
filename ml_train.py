@@ -3,21 +3,28 @@ import pickle
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
-
-threhold = {
-    5: 350,
-    7: 500,
-}
-
 import os
 
 FOLDER_NAME = "record"
 MODEL_FOLDER = 'model'
-MAX_TAKE = 500
+MAX_TAKE = 5000
 
 threshold = {
-    5: 350,
-    7: 500,
+    'PRACTICE1': -1,
+    'PRACTICE2': -1,
+    'PRACTICE3': -1,
+    'PRACTICE4': -1,
+    'PRACTICE5': 350,
+    'PRACTICE6': 250,
+    'PRACTICE7': 500,
+    'PRACTICE8': 220,
+    'PRACTICE9': 100,
+    'PRACTICE10': 250,
+    'MAZE1': 450,
+    'MAZE2': -1,
+    'MAZE3': -1,
+    'MAZE4': 600,
+    'MAZE5': -1
 }
 
 dataset_path = []
@@ -25,7 +32,12 @@ for folder_name in os.listdir(FOLDER_NAME):
     if not os.path.isdir(os.path.join(FOLDER_NAME, folder_name)):
         continue  # skip files that aren't directories
 
-    folder_threshold = threshold.get(int(folder_name), None)  # default to 0 if folder not in threshold dict
+    folder_threshold = threshold.get(folder_name, None)  # default to 0 if folder not in threshold dict
+    if folder_threshold == None:
+        print(f"{folder_name} limit undefined")
+    if folder_threshold != None and folder_threshold < 0:
+        folder_threshold = None
+        print(f"{folder_name} has no limit")
 
     folder_dataset_path = []
 
