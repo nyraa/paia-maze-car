@@ -5,8 +5,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import os
 
-FOLDER_NAME = "record_"
-MODEL_FOLDER = 'model'
+FOLDER_NAME = "record_v1"
+MODEL_FOLDER = ''
 MAX_TAKE = 300
 
 threshold = {
@@ -109,6 +109,7 @@ y_predict = regressor.predict(X_test)
 mse = mean_squared_error(y_test, y_predict)
 rmse = mse ** 0.5
 print(f"Root Mean Squared Error: {rmse:.2f}")
-os.makedirs(MODEL_FOLDER, exist_ok=True)
+if not MODEL_FOLDER == '':
+    os.makedirs(MODEL_FOLDER, exist_ok=True)
 with open(os.path.join(MODEL_FOLDER, 'model.pickle'), 'wb') as f:
     pickle.dump(regressor, f)
