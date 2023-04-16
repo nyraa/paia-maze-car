@@ -2,6 +2,11 @@ import os
 import pickle
 
 MODEL_FOLDER = 'model'
+MODEL_FILE = 'model.pickle'
+if os.path.isfile(os.path.join(MODEL_FOLDER, MODEL_FILE)):
+    MODEL_PATH = os.path.join(MODEL_FOLDER, MODEL_FILE)
+else:
+    MODEL_PATH = MODEL_FILE
 
 class MLPlay:
     def __init__(self, *args, **kwargs):
@@ -9,7 +14,7 @@ class MLPlay:
         self.last_y = 0
         self.stuck_frames = 0
 
-        with open(os.path.join(MODEL_FOLDER, 'model.pickle'), 'rb') as f:
+        with open(MODEL_PATH, 'rb') as f:
             self.model = pickle.load(f)
 
         pass
