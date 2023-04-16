@@ -1,13 +1,15 @@
 import os
 import pickle
 
+MODEL_FOLDER = 'model'
+
 class MLPlay:
     def __init__(self, *args, **kwargs):
         self.last_x = 0
         self.last_y = 0
         self.stuck_frames = 0
 
-        with open(os.path.join('model', 'model.pickle'), 'rb') as f:
+        with open(os.path.join(MODEL_FOLDER, 'model.pickle'), 'rb') as f:
             self.model = pickle.load(f)
 
         pass
